@@ -6,13 +6,10 @@ import fetchToken from '../helpers/fetch';
 import Button from '../components/Button';
 import { ACTION_INCREMENT_SCORE } from '../redux/actions';
 
-const one = 1;
-const two = 2;
+const correctAnswerId = 'correct-answer';
 const three = 3;
 const four = 4;
-
 const ten = 10;
-const correctAnswerId = 'correct-answer';
 class Game extends Component {
   state = {
     questions: [],
@@ -54,15 +51,18 @@ class Game extends Component {
   handleClickAnswer = ({ target }) => {
     const { dispatch } = this.props;
     const { timer, questions, questionIndex } = this.state;
-    let dificuldade = 0;
+    const dificuldade = {
+      easy: 1,
+      medium: 2,
+      hard: 3,
+    };
 
     this.styleAnswerButton();
     if (target.id === correctAnswerId) {
-      if (questions[questionIndex].difficulty === 'easy') dificuldade = one;
-      if (questions[questionIndex].difficulty === 'medium') dificuldade = two;
-      if (questions[questionIndex].difficulty === 'hard') dificuldade = three;
-
-      ACTION_INCREMENT_SCORE(dispatch, (ten + (timer * dificuldade)));
+      ACTION_INCREMENT_SCORE(
+        dispatch,
+        (ten + (timer * dificuldade[questions[questionIndex].difficulty])),
+      );
     }
 
     this.setState({
