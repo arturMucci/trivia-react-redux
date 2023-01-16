@@ -5,7 +5,7 @@ import Header from '../components/Header';
 import fetchToken from '../helpers/fetch';
 import Button from '../components/Button';
 import { ACTION_INCREMENT_SCORE } from '../redux/actions';
-
+// Alterando alguma coisa pra poder dar push
 const correctAnswerId = 'correct-answer';
 const three = 3;
 const four = 4;
