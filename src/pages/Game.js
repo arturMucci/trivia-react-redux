@@ -147,6 +147,8 @@ class Game extends Component {
       nextOn,
     } = this.state;
 
+    console.log('Teste 6');
+
     return (
       <div>
         <Header />
