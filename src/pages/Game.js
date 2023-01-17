@@ -29,8 +29,8 @@ class Game extends Component {
   async componentDidMount() {
     const { history } = this.props;
     const token = localStorage.getItem('token');
-    const url = `https://opentdb.com/api.php?amount=5&token=${token}`;
-    const apiCheck = await fetchToken(url);
+    const newUrl = `https://opentdb.com/api.php?amount=5&token=${token}`;
+    const apiCheck = await fetchToken(newUrl);
     if (apiCheck.response_code === three) {
       localStorage.removeItem('token');
       history.push('/');

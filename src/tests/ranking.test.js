@@ -16,6 +16,9 @@ describe('teste da página de ranking', () => {
     });
     test('', () => {
         renderWithRouterAndRedux(<Ranking />);
-        const playerName = screen.getByTestId('player-name-0');
+        const player = screen.getByTestId('player-name-0');
+        const score = screen.getByTestId('player-score-0');
+        expect(player).toBeInTheDocument();
+        expect(score).toBeInTheDocument(); 
     })
 })
