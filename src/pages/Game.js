@@ -28,8 +28,8 @@ class Game extends Component {
     const emailString = md5(gravatarEmail).toString();
     ACTION_SAVE_GRAVATAR(dispatch, `https://www.gravatar.com/avatar/${emailString}`);
     const token = localStorage.getItem('token');
-    const url = `https://opentdb.com/api.php?amount=5&token=${token}`;
-    const apiCheck = await fetchToken(url);
+    const newUrl = `https://opentdb.com/api.php?amount=5&token=${token}`;
+    const apiCheck = await fetchToken(newUrl);
     if (apiCheck.response_code === three) {
       localStorage.removeItem('token');
       history.push('/');

@@ -10,7 +10,11 @@ class Ranking extends Component {
 
   componentDidMount() {
     const newRanking = JSON.parse(localStorage.getItem('ranking'));
-    if (newRanking.length > 0) {
+    if (newRanking === null) {
+      this.setState({
+        ranking: [],
+      });
+    } else if (newRanking.length > 0) {
       this.setState({
         ranking: newRanking,
       });

@@ -67,9 +67,9 @@ const button = screen.getByRole('button', {
   const image = await screen.findByRole('img', {
     name: /profile/i
   })
-  
   expect(image).toBeInTheDocument();
   expect(history.location.pathname).toBe('/game');
+
 });
 test('Verifica se a tela inicial contem um botão que leve para a configuração do jogo', async () => {
   const { history } = renderWithRouterAndRedux(<App />);
