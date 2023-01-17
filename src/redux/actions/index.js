@@ -11,3 +11,16 @@ export const ACTION_INCREMENT_SCORE = (dispatch, payload) => {
     payload,
   });
 };
+
+export const SAVE_GRAVATAR = 'SAVE_GRAVATAR';
+export const ACTION_SAVE_GRAVATAR = (dispatch, payload) => {
+  dispatch({
+    type: SAVE_GRAVATAR,
+    payload,
+  });
+};
+
+export const RESET_PLAYER = 'RESET_PLAYER';
+export const ACTION_RESET_PLAYER = (dispatch) => {
+  dispatch({ type: RESET_PLAYER });
+};

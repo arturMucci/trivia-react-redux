@@ -1,21 +1,18 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import md5 from 'crypto-js/md5';
 import Header from '../components/Header';
 import fetchToken from '../helpers/fetch';
 import Button from '../components/Button';
-import { ACTION_INCREMENT_SCORE } from '../redux/actions';
+import { ACTION_INCREMENT_SCORE, ACTION_SAVE_GRAVATAR } from '../redux/actions';
 
-const one = 1;
-const two = 2;
+const correctAnswerId = 'correct-answer';
 const three = 3;
 const four = 4;
-
 const ten = 10;
-const correctAnswerId = 'correct-answer';
 class Game extends Component {
-  state = {
-    questions: [],
+  state = { questions: [],
     questionIndex: 0,
     answers: [],
     correctClass: '',
@@ -27,7 +24,9 @@ class Game extends Component {
   };
 
   async componentDidMount() {
-    const { history } = this.props;
+    const { history, dispatch, player: { gravatarEmail } } = this.props;
+    const emailString = md5(gravatarEmail).toString();
+    ACTION_SAVE_GRAVATAR(dispatch, `https://www.gravatar.com/avatar/${emailString}`);
     const token = localStorage.getItem('token');
     const newUrl = `https://opentdb.com/api.php?amount=5&token=${token}`;
     const apiCheck = await fetchToken(newUrl);
@@ -35,9 +34,7 @@ class Game extends Component {
       localStorage.removeItem('token');
       history.push('/');
     } else {
-      this.setState({
-        questions: apiCheck.results,
-      }, this.handleShuffle);
+      this.setState({ questions: apiCheck.results }, this.handleShuffle);
       this.timedStart();
     }
   }
@@ -47,36 +44,41 @@ class Game extends Component {
     if (timer === 0) this.endTimer();
   }
 
+  componentWillUnmount() {
+    const ranking = JSON.parse(localStorage.getItem('ranking'));
+    const { player: { name, score }, gravatar } = this.props;
+    const newRanking = localStorage.ranking
+      ? [...ranking, { name, score, gravatar }]
+      : [{ name, score, gravatar }];
+
+    newRanking.sort((a, b) => b.score - a.score);
+
+    localStorage
+      .setItem('ranking', JSON.stringify(newRanking));
+  }
+
   styleAnswerButton = () => {
     this.setState({ correctClass: 'green-border', wrongClass: 'red-border' });
   };
 
   handleClickAnswer = ({ target }) => {
-    const { dispatch } = this.props;
-    const { timer, questions, questionIndex } = this.state;
-    let dificuldade = 0;
+    const { state: { timer, questions, questionIndex }, props: { dispatch } } = this;
+    const dificuldade = { easy: 1, medium: 2, hard: 3 };
 
     this.styleAnswerButton();
     if (target.id === correctAnswerId) {
-      if (questions[questionIndex].difficulty === 'easy') dificuldade = one;
-      if (questions[questionIndex].difficulty === 'medium') dificuldade = two;
-      if (questions[questionIndex].difficulty === 'hard') dificuldade = three;
-
-      ACTION_INCREMENT_SCORE(dispatch, (ten + (timer * dificuldade)));
+      ACTION_INCREMENT_SCORE(
+        dispatch,
+        (ten + (timer * dificuldade[questions[questionIndex].difficulty])),
+      );
     }
-
-    this.setState({
-      nextOn: true,
-    });
-
+    this.setState({ nextOn: true });
     this.endTimer();
   };
 
   shuffleArray = (arr) => {
     const arr2 = [];
-    arr.forEach((element) => {
-      arr2.splice(Math.floor(Math.random() * arr.length), 0, element);
-    });
+    arr.forEach((el) => arr2.splice(Math.floor(Math.random() * arr.length), 0, el));
     return arr2;
   };
 
@@ -87,22 +89,14 @@ class Game extends Component {
         questions[questionIndex].correct_answer,
         ...questions[questionIndex].incorrect_answers,
       ]);
-      this.setState({
-        answers,
-        correctAnswer: questions[questionIndex].correct_answer,
-      });
+      this.setState({ answers, correctAnswer: questions[questionIndex].correct_answer });
     }
   };
 
   timedStart = () => {
     const { timer, intervalId } = this.state;
     const interval = 1000;
-
-    if (intervalId) {
-      this.setState({ timer: 30, intervalId: '' });
-    }
-
-    if (timer === 0) {
+    if (intervalId || timer === 0) {
       this.setState({ timer: 30, intervalId: '' });
     }
 
@@ -152,7 +146,7 @@ class Game extends Component {
       timer,
       nextOn,
     } = this.state;
-    console.log(questions);
+
     return (
       <div>
         <Header />
@@ -172,8 +166,7 @@ class Game extends Component {
                     data-testid="question-text"
                   >
                     {
-                      questions[questionIndex]
-                        .question
+                      questions[questionIndex].question
                     }
                   </h3>
                   {timer}
@@ -226,10 +219,20 @@ class Game extends Component {
 }
 
 Game.propTypes = {
+  player: PropTypes.shape({
+    name: PropTypes.string.isRequired,
+    score: PropTypes.number.isRequired,
+    gravatarEmail: PropTypes.string.isRequired,
+  }).isRequired,
+  gravatar: PropTypes.string,
   dispatch: PropTypes.func.isRequired,
   history: PropTypes.shape({
     push: PropTypes.func.isRequired,
   }).isRequired,
+};
+
+Game.defaultProps = {
+  gravatar: '',
 };
 
 const mapStateToProps = (state) => ({
