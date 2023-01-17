@@ -4,13 +4,21 @@ import { connect } from 'react-redux';
 import Input from '../components/Input';
 import Button from '../components/Button';
 import fetchToken from '../helpers/fetch';
-import { ACTION_LOGIN_SAVED } from '../redux/actions/index';
+import {
+  ACTION_LOGIN_SAVED,
+  ACTION_RESET_PLAYER,
+} from '../redux/actions/index';
 
 class Login extends Component {
   state = {
     name: '',
     gravatarEmail: '',
   };
+
+  componentDidMount() {
+    const { dispatch } = this.props;
+    ACTION_RESET_PLAYER(dispatch);
+  }
 
   handleChange = ({ target: { id, value } }) => {
     this.setState({

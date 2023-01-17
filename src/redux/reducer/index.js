@@ -1,6 +1,8 @@
 import {
   LOGIN_SAVED,
   INCREMENT_SCORE,
+  SAVE_GRAVATAR,
+  RESET_PLAYER,
 } from '../actions';
 
 const INITIAL_STATE = {
@@ -14,6 +16,12 @@ const INITIAL_STATE = {
 
 const rootReducer = (state = INITIAL_STATE, action) => {
   switch (action.type) {
+  case SAVE_GRAVATAR:
+    return {
+      ...state,
+      gravatar: action.payload,
+
+    };
   case LOGIN_SAVED:
     return {
       ...state,
@@ -30,6 +38,11 @@ const rootReducer = (state = INITIAL_STATE, action) => {
         score: state.player.score + action.payload,
         assertions: state.player.assertions + 1,
       },
+    };
+  case RESET_PLAYER:
+    return {
+      ...state,
+      player: INITIAL_STATE.player,
     };
   default:
     return state;
