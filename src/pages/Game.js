@@ -147,8 +147,6 @@ class Game extends Component {
       nextOn,
     } = this.state;
 
-    console.log('Teste 6');
-
     return (
       <div>
         <Header />
@@ -171,7 +169,7 @@ class Game extends Component {
                       questions[questionIndex].question
                     }
                   </h3>
-                  {timer}
+                  <div data-testId="timer">{timer}</div>
                   <section
                     data-testid="answer-options"
                   >

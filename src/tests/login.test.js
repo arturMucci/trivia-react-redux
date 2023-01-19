@@ -1,5 +1,5 @@
 import React from 'react';
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import renderWithRouterAndRedux from './helpers/renderWithRouterAndRedux';
 import userEvent from '@testing-library/user-event';
 import App from '../App';
@@ -64,13 +64,59 @@ const button = screen.getByRole('button', {
   userEvent.type(inputEmail, 'test@test.com');
   userEvent.click(button);
 
-  const image = await screen.findByRole('img', {
-    name: /profile/i
-  })
-  expect(image).toBeInTheDocument();
-  expect(history.location.pathname).toBe('/game');
+  const text1 = await screen.findByText(/sua vez/i);
+    expect(text1).toBeInTheDocument();
 
-});
+    const headerScore = await screen.findByTestId('header-score');
+    expect(headerScore).toBeInTheDocument();
+
+    const category = await screen.findByTestId('question-category');
+    expect(category).toBeInTheDocument();
+
+    const text = await screen.findByTestId('question-text');
+    expect(text).toBeInTheDocument();
+
+    const answer = await screen.findByTestId('answer-options');
+    expect(answer).toBeInTheDocument();
+
+    expect(history.location.pathname).toBe('/game');
+
+    const timer = screen.getByTestId('timer');
+    expect(timer).toHaveTextContent('30');
+    await waitFor(() => {
+      expect(timer).toHaveTextContent('29');
+    }, { timeout: 10000 });
+
+    const correctAnswer = await screen.findByTestId('correct-answer');
+    userEvent.click(correctAnswer);
+    const nextButton = await screen.findByTestId('btn-next');
+    userEvent.click(nextButton);
+
+    const correctAnswer2 = await screen.findByTestId('correct-answer');
+    userEvent.click(correctAnswer2);
+    const nextButton2 = await screen.findByTestId('btn-next');
+    userEvent.click(nextButton2);
+
+    const correctAnswer3 = await screen.findByTestId('correct-answer');
+    userEvent.click(correctAnswer3);
+    const nextButton3 = await screen.findByTestId('btn-next');
+    userEvent.click(nextButton3);
+
+    const correctAnswer4 = await screen.findByTestId('correct-answer');
+    userEvent.click(correctAnswer4);
+    const nextButton4 = await screen.findByTestId('btn-next');
+    userEvent.click(nextButton4);
+
+    const correctAnswer5 = await screen.findByTestId('correct-answer');
+    userEvent.click(correctAnswer5);
+    const nextButton5 = await screen.findByTestId('btn-next');
+    userEvent.click(nextButton5);
+
+    expect(history.location.pathname).toBe('/feedback');
+    const feedbackText = await screen.findByTestId('feedback-text');
+    expect(feedbackText).toBeInTheDocument();
+  });
+
 test('Verifica se a tela inicial contem um botão que leve para a configuração do jogo', async () => {
   const { history } = renderWithRouterAndRedux(<App />);
   const button = screen.getByTestId('btn-settings');
